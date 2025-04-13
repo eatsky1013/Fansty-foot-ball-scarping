@@ -1,0 +1,24 @@
+{
+  "name": "sport",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "start mongod --dbpath ./db",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "cheerio": "^1.0.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2",
+    "puppeteer": "^24.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

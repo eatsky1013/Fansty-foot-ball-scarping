@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Player Stats</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e293b;
+            --secondary-color: #334155;
+            --accent-color: #3b82f6;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1em 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .toggle-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: var(--transition);
+            opacity: 0.8;
+        }
+
+        .toggle-btn:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .toggle-btn.active {
+            background: var(--success-color);
+            opacity: 1;
+        }
+
+        .source-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 1.5rem;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .source-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .source-section.active {
+            display: block;
+        }
+
+        .source-section h2 {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            min-width: 200px;
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table {
+            margin: 0;
+            width: 100%;
+            font-size: 0.875rem;
+        }
+
+        .table thead th {
+            background: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+            color: var(--text-primary);
+        }
+
+        .table tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .preview-message {
+            top: 0px;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            display: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification i {
+            font-size: 1.25rem;
+        }
+
+        .notification-message {
+            font-weight: 500;
+        }
+
+        .alert {
+            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 768px) {
+            .source-controls {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-control {
+                min-width: 100%;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Player Details Modal Styles */
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            background: transparent;
+        }
+
+        .tab-content {
+            padding: 1rem 0;
+        }
+
+        /* Circular button styles */
+        .btn-circle {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 4px;
+        }
+
+        .btn-circle i {
+            font-size: 14px;
+        }
+
+        /* Column width for actions */
+        .actions-column {
+            width: 10%;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span class="notification-message"></span>
+    </div>
+    <div class="header">
+        <h1>NFL Player Stats</h1>
+        <div class="header-buttons">
+            <button id="toggleCBS" class="toggle-btn active">CBS Players</button>
+            <button id="toggleESPN" class="toggle-btn">ESPN Players</button>
+        </div>
+
+    </div>
+
+    <div class="source-controls">
+        <!-- CBS Section -->
+        <div class="source-section active">
+            <div
+                style="display:flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 10px;">
+                <div>
+
+                    <h2>
+                        <i class="fas fa-football-ball"></i>
+                        CBS Players
+                    </h2>
+                </div>
+                <div id="previewMessageCBS" class="preview-message"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 10px;">
+                <div style="display:flex; gap:1rem;">
+                    <input type="text" class="form-control" placeholder="Search players..." id="searchCBS">
+                    <select class="form-control" id="positionFilterCBS">
+                        <option value="">All Positions</option>
+                        <option value="QB">QB</option>
+                        <option value="RB">RB</option>
+                        <option value="WR">WR</option>
+                        <option value="TE">TE</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:1rem;">
+                    <button id="fetchCBS" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Fetch
+                    </button>
+                    <button id="saveCBS" class="btn btn-success" disabled>
+                        <i class="fas fa-save"></i>
+                        Save
+                    </button>
+                    <button id="eraseCBS" class="btn btn-danger">
+                        <i class="fas fa-trash"></i>
+                        Delete All
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Team</th>
+                                <th>Pass Yds</th>
+                                <th>Pass TD</th>
+                                <th>Rush Yds</th>
+                                <th>Rush TD</th>
+                                <th>Fantasy Pts</th>
+                                <th class="actions-column">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cbsPlayersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESPN Section -->
+        <div class="source-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 10px;">
+                <h2>
+                    <i class="fas fa-football-ball"></i>
+                    ESPN Players
+                </h2>
+                <div id="previewMessageESPN" class="preview-message"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 10px;">
+                <div style="display:flex; gap:1rem;">
+                    <input type="text" class="form-control" placeholder="Search players..." id="searchESPN">
+                    <select class="form-control" id="positionFilterESPN">
+                        <option value="">All Positions</option>
+                        <option value="QB">QB</option>
+                        <option value="RB">RB</option>
+                        <option value="WR">WR</option>
+                        <option value="TE">TE</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:1rem;">
+                    <button id="fetchESPN" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Fetch
+                    </button>
+                    <button id="saveESPN" class="btn btn-success" disabled>
+                        <i class="fas fa-save"></i>
+                        Save
+                    </button>
+                    <button id="eraseESPN" class="btn btn-danger">
+                        <i class="fas fa-trash"></i>
+                        Delete All
+                    </button>
+                </div>
+
+            </div>
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Team</th>
+                                <th>Pass Yds</th>
+                                <th>Pass TD</th>
+                                <th>Rush Yds</th>
+                                <th>Rush TD</th>
+                                <th>Fantasy Pts</th>
+                                <th class="actions-column">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="espnPlayersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Player Details Modal -->
+    <div class="modal fade" id="playerDetailsModal" tabindex="-1" aria-labelledby="playerDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="playerDetailsModalLabel">Player Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="playerDetailsModalBody">
+                    <!-- Content will be dynamically inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update the toggle handlers to show notifications
+        document.getElementById('toggleCBS').addEventListener('click', () => {
+            document.querySelector('.source-section:nth-child(1)').classList.add('active');
+            document.querySelector('.source-section:nth-child(2)').classList.remove('active');
+            document.getElementById('toggleCBS').classList.add('active');
+            document.getElementById('toggleESPN').classList.remove('active');
+        });
+
+        document.getElementById('toggleESPN').addEventListener('click', () => {
+            document.querySelector('.source-section:nth-child(1)').classList.remove('active');
+            document.querySelector('.source-section:nth-child(2)').classList.add('active');
+            document.getElementById('toggleCBS').classList.remove('active');
+            document.getElementById('toggleESPN').classList.add('active');
+        });
+
+        // Set initial state
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.source-section:nth-child(1)').classList.add('active');
+            document.querySelector('.source-section:nth-child(2)').classList.remove('active');
+        });
+
+        // Load saved players on page load
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                console.log('Loading saved players from database...');
+
+                // Fetch CBS Players from MongoDB
+                const cbsResponse = await fetch('/players/cbs');
+                const cbsData = await cbsResponse.json();
+                console.log('CBS Response:', cbsData);
+
+                if (cbsData.success && cbsData.players && Array.isArray(cbsData.players)) {
+                    console.log('Loaded CBS players from database:', cbsData.players.length);
+                    updateCBSTable(cbsData.players);
+                    // Enable save button if we have players
+                    document.getElementById('saveCBS').disabled = false;
+
+                    // Show success message
+                    const previewMessage = document.getElementById('previewMessageCBS');
+                    previewMessage.style.display = 'block';
+                    previewMessage.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Loaded ${cbsData.players.length} CBS players from database
+                        </div>
+                    `;
+                } else {
+                    console.error('Invalid CBS data format:', cbsData);
+                }
+
+                // Fetch ESPN Players from MongoDB
+                const espnResponse = await fetch('/players/espn');
+                const espnData = await espnResponse.json();
+                console.log('ESPN Response:', espnData);
+
+                if (espnData.success && espnData.players && Array.isArray(espnData.players)) {
+                    console.log('Loaded ESPN players from database:', espnData.players.length);
+                    updateESPNTable(espnData.players);
+                    // Enable save button if we have players
+                    document.getElementById('saveESPN').disabled = false;
+
+                    // Show success message
+                    const previewMessage = document.getElementById('previewMessageESPN');
+                    previewMessage.style.display = 'block';
+                    previewMessage.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Loaded ${espnData.players.length} ESPN players from database
+                        </div>
+                    `;
+                } else {
+                    console.error('Invalid ESPN data format:', espnData);
+                }
+            } catch (error) {
+                console.error('Error loading saved players:', error);
+                // Show error message in both preview messages
+                const cbsPreviewMessage = document.getElementById('previewMessageCBS');
+                const espnPreviewMessage = document.getElementById('previewMessageESPN');
+                handleError(error, cbsPreviewMessage);
+                handleError(error, espnPreviewMessage);
+            }
+        });
+
+        // Error handling utility
+        const handleError = (error, messageElement) => {
+            console.error('Error:', error);
+            messageElement.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    ${error.message || 'An error occurred'}
+                </div>
+            `;
+            messageElement.style.display = 'block';
+        };
+
+        // Loading state utility
+        const setLoadingState = (button, isLoading) => {
+            button.disabled = isLoading;
+            button.innerHTML = isLoading
+                ? '<i class="fas fa-spinner fa-spin me-2"></i>Loading...'
+                : button.getAttribute('data-original-text');
+        };
+
+        // Sorting functionality
+        let currentSort = {
+            column: null,
+            direction: 1
+        };
+
+        function sortTable(tableId, column, direction) {
+            const table = document.getElementById(tableId);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+
+            rows.sort((a, b) => {
+                const aValue = a.cells[column].textContent.trim();
+                const bValue = b.cells[column].textContent.trim();
+
+                if (!isNaN(aValue) && !isNaN(bValue)) {
+                    return (parseFloat(aValue) - parseFloat(bValue)) * direction;
+                }
+                return aValue.localeCompare(bValue) * direction;
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Add sorting event listeners
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                const tableId = header.closest('table').id;
+                const column = Array.from(header.parentElement.children).indexOf(header);
+
+                if (currentSort.column === column) {
+                    currentSort.direction *= -1;
+                } else {
+                    currentSort.column = column;
+                    currentSort.direction = 1;
+                }
+
+                sortTable(tableId, column, currentSort.direction);
+
+                // Update sort icons
+                document.querySelectorAll('.sort-icon').forEach(icon => {
+                    icon.className = 'fas fa-sort sort-icon';
+                });
+                header.querySelector('.sort-icon').className =
+                    `fas fa-sort-${currentSort.direction === 1 ? 'up' : 'down'} sort-icon`;
+            });
+        });
+
+        // Filtering functionality
+        function filterTable(tableId, searchTerm, positionFilter) {
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const position = row.cells[1].textContent;
+                const matchesSearch = name.includes(searchTerm.toLowerCase());
+                const matchesPosition = !positionFilter || position === positionFilter;
+
+                row.style.display = matchesSearch && matchesPosition ? '' : 'none';
+            });
+        }
+
+        // Add filter event listeners
+        document.getElementById('searchCBS').addEventListener('input', (e) => {
+            filterTable('cbsPlayersTable', e.target.value, document.getElementById('positionFilterCBS').value);
+        });
+
+        document.getElementById('positionFilterCBS').addEventListener('change', (e) => {
+            filterTable('cbsPlayersTable', document.getElementById('searchCBS').value, e.target.value);
+        });
+
+        document.getElementById('searchESPN').addEventListener('input', (e) => {
+            filterTable('espnPlayersTable', e.target.value, document.getElementById('positionFilterESPN').value);
+        });
+
+        document.getElementById('positionFilterESPN').addEventListener('change', (e) => {
+            filterTable('espnPlayersTable', document.getElementById('searchESPN').value, e.target.value);
+        });
+
+        // CBS Fetch Handler
+        document.getElementById('fetchCBS').addEventListener('click', async () => {
+            const button = document.getElementById('fetchCBS');
+            const saveButton = document.getElementById('saveCBS');
+            const previewMessage = document.getElementById('previewMessageCBS');
+
+            button.setAttribute('data-original-text', button.innerHTML);
+            setLoadingState(button, true);
+            previewMessage.style.display = 'block';
+            previewMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Fetching CBS player data...';
+
+            try {
+                const response = await fetch('/scrape/cbs');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || 'Failed to fetch CBS data');
+                }
+
+                const data = await response.json();
+                if (!data.players || !Array.isArray(data.players)) {
+                    throw new Error('Invalid data format received from server');
+                }
+
+                updateCBSTable(data.players);
+                previewMessage.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Successfully fetched ${data.players.length} CBS players
+                    </div>
+                `;
+                saveButton.disabled = false;
+            } catch (error) {
+                handleError(error, previewMessage);
+            } finally {
+                setLoadingState(button, false);
+            }
+        });
+
+        // CBS Save Handler
+        document.getElementById('saveCBS').addEventListener('click', async () => {
+            const button = document.getElementById('saveCBS');
+            const previewMessage = document.getElementById('previewMessageCBS');
+
+            try {
+                button.setAttribute('data-original-text', button.innerHTML);
+                setLoadingState(button, true);
+                previewMessage.style.display = 'block';
+                previewMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving CBS player data...';
+
+                const tableBody = document.getElementById('cbsPlayersTable');
+                const rows = tableBody.getElementsByTagName('tr');
+                const players = [];
+
+                for (let row of rows) {
+                    const cells = row.getElementsByTagName('td');
+                    if (cells.length < 8) continue;
+
+                    const player = {
+                        name: cells[0].textContent.trim(),
+                        position: cells[1].textContent.trim() || 'Unknown',
+                        team: cells[2].textContent.trim(),
+                        stats: {
+                            passing: {
+                                yards: parseInt(cells[3].textContent.trim()) || 0,
+                                touchdowns: parseInt(cells[4].textContent.trim()) || 0
+                            },
+                            rushing: {
+                                yards: parseInt(cells[5].textContent.trim()) || 0,
+                                touchdowns: parseInt(cells[6].textContent.trim()) || 0
+                            },
+                            fantasy: {
+                                total_points: parseFloat(cells[7].textContent.trim()) || 0
+                            }
+                        }
+                    };
+
+                    // Preserve existing player ID if it exists
+                    const existingId = row.getAttribute('data-player-id');
+                    if (existingId && existingId !== 'undefined' && existingId !== '') {
+                        player._id = existingId;
+                    }
+
+                    if (!player.name || !player.position || !player.team) {
+                        throw new Error(`Missing required fields for player: ${JSON.stringify(player)}`);
+                    }
+
+                    players.push(player);
+                }
+
+                if (players.length === 0) {
+                    throw new Error('No valid players to save');
+                }
+
+                console.log('Sending players to save:', players);
+
+                const response = await fetch('/save/cbs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ players })
+                });
+
+                // Check if response is OK before trying to parse JSON
+                if (!response.ok) {
+                    // Try to parse error response as JSON
+                    try {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || errorData.details || 'Failed to save CBS data');
+                    } catch (parseError) {
+                        // If parsing fails, use status text
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }
+                }
+
+                // Check content type to ensure we're getting JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Unexpected content type:', contentType);
+                    throw new Error('Server returned non-JSON response');
+                }
+
+                // Parse the response as JSON
+                let responseData;
+                try {
+                    responseData = await response.json();
+                    console.log('Save response:', responseData);
+                } catch (parseError) {
+                    console.error('Error parsing response:', parseError);
+                    throw new Error('Failed to parse server response');
+                }
+
+                // If we have players in the response, use them
+                if (responseData.players && Array.isArray(responseData.players)) {
+                    console.log('Using players from save response:', responseData.players);
+                    updateCBSTable(responseData.players);
+                    previewMessage.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Successfully saved ${responseData.players.length} CBS players
+                        </div>
+                    `;
+                    button.disabled = true;
+                } else {
+                    // Fallback: fetch updated player list
+                    console.log('No players in save response, fetching updated list');
+                    try {
+                        const fetchResponse = await fetch('/players/cbs');
+                        if (!fetchResponse.ok) {
+                            throw new Error('Failed to fetch updated player list');
+                        }
+
+                        const fetchData = await fetchResponse.json();
+                        if (fetchData.players && Array.isArray(fetchData.players)) {
+                            console.log('Received updated players:', fetchData.players);
+                            updateCBSTable(fetchData.players);
+                            previewMessage.innerHTML = `
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Successfully saved ${fetchData.players.length} CBS players
+                                </div>
+                            `;
+                            button.disabled = true;
+                        } else {
+                            throw new Error('Invalid player data format');
+                        }
+                    } catch (fetchError) {
+                        console.error('Error fetching updated players:', fetchError);
+                        // If fetch fails but save was successful, show success message with original count
+                        previewMessage.innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Successfully saved ${players.length} CBS players
+                            </div>
+                        `;
+                        button.disabled = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                handleError(error, previewMessage);
+                button.disabled = false;
+            } finally {
+                setLoadingState(button, false);
+            }
+        });
+
+        // Helper function to update CBS table with preview data
+        function updateCBSTable(players) {
+            const tableBody = document.getElementById('cbsPlayersTable');
+            if (!tableBody) return;
+
+            console.log('Updating CBS table with players:', players);
+
+            tableBody.innerHTML = players.map(player => {
+                const name = player.name || 'Unknown Player';
+                const position = player.position === 'Unknown' ? '' : (player.position || '');
+                const team = player.team || 'N/A';
+                const playerId = player._id;
+
+                console.log('Processing CBS player:', { name, position, team, id: playerId });
+
+                // Only show action buttons if player has a valid ID
+                const hasId = Boolean(playerId);
+                if (!hasId) {
+                    console.warn('Player missing ID:', player);
+                }
+                return `
+                <tr data-player-id="${playerId || ''}">
+                    <td>${name}</td>
+                    <td>${position}</td>
+                    <td>${team}</td>
+                    <td>${player.stats?.passing?.yards || 0}</td>
+                    <td>${player.stats?.passing?.touchdowns || 0}</td>
+                    <td>${player.stats?.rushing?.yards || 0}</td>
+                    <td>${player.stats?.rushing?.touchdowns || 0}</td>
+                    <td>${player.stats?.fantasy?.total_points || 0}</td>
+                    <td class="actions-column">
+                        ${hasId ? `
+                            <button onclick="viewCBSPlayerDetails('${playerId}')" class="btn btn-primary btn-circle" title="View Details">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button onclick="deleteCBSPlayer('${playerId}')" class="btn btn-danger btn-circle" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Delete CBS Player with confirmation
+        async function deleteCBSPlayer(playerId) {
+            if (!playerId) {
+                console.error('No player ID provided for deletion');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this player?')) return;
+
+            const previewMessage = document.getElementById('previewMessageCBS');
+            try {
+                console.log('Deleting CBS player with ID:', playerId);
+                const response = await fetch(`/player/delete/cbs/${playerId}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.details || 'Failed to delete player');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    // Get updated player list
+                    const fetchResponse = await fetch('/players/cbs');
+                    const fetchData = await fetchResponse.json();
+
+                    if (fetchData.success && fetchData.players && Array.isArray(fetchData.players)) {
+                        updateCBSTable(fetchData.players);
+                        previewMessage.innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Player deleted successfully
+                            </div>
+                        `;
+                    } else {
+                        throw new Error('Failed to fetch updated player list');
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to delete player');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                handleError(error, previewMessage);
+            }
+        }
+
+        // Delete All CBS Players with confirmation
+        document.getElementById('eraseCBS').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete all CBS players? This action cannot be undone.')) return;
+
+            const button = document.getElementById('eraseCBS');
+            const previewMessage = document.getElementById('previewMessageCBS');
+
+            button.setAttribute('data-original-text', button.innerHTML);
+            setLoadingState(button, true);
+            previewMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting all CBS players...';
+
+            try {
+                const response = await fetch('/eraseAll/cbs', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || 'Failed to delete CBS players');
+                }
+
+                // Update the table instead of reloading the page
+                updateCBSTable([]);
+                previewMessage.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Successfully deleted all CBS players
+                    </div>
+                `;
+            } catch (error) {
+                handleError(error, previewMessage);
+            } finally {
+                setLoadingState(button, false);
+            }
+        });
+
+        // Helper function to update ESPN table with preview data
+        function updateESPNTable(players) {
+            const tableBody = document.getElementById('espnPlayersTable');
+            if (!tableBody) return;
+
+            console.log('Updating ESPN table with players:', players);
+
+            tableBody.innerHTML = players.map(player => {
+                const name = player.name || 'Unknown Player';
+                const position = player.position === 'Unknown' ? '' : (player.position || '');
+                const team = player.team || 'N/A';
+                const playerId = player._id;
+
+                console.log('Processing ESPN player:', { name, position, team, id: playerId });
+
+                // Only show action buttons if player has a valid ID
+                const hasId = Boolean(playerId);
+                if (!hasId) {
+                    console.warn('Player missing ID:', player);
+                }
+
+                // Create data attributes for all stats
+                const passingStats = `
+                    data-attempts="${player.stats?.passing?.attempts || 0}"
+                    data-completions="${player.stats?.passing?.completions || 0}"
+                    data-interceptions="${player.stats?.passing?.interceptions || 0}"
+                `;
+
+                const rushingStats = `
+                    data-attempts="${player.stats?.rushing?.attempts || 0}"
+                `;
+
+                const receivingStats = `
+                    data-receptions="${player.stats?.receiving?.receptions || 0}"
+                    data-receiving-yards="${player.stats?.receiving?.yards || 0}"
+                    data-receiving-touchdowns="${player.stats?.receiving?.touchdowns || 0}"
+                `;
+
+                const miscStats = `
+                    data-2pt="${player.stats?.misc?.two_point_conversions || 0}"
+                    data-fumbles="${player.stats?.misc?.fumbles_lost || 0}"
+                    data-total-td="${player.stats?.misc?.total_touchdowns || 0}"
+                    data-ppg="${player.stats?.fantasy?.points_per_game || 0}"
+                `;
+
+                return `
+                <tr data-player-id="${playerId || ''}">
+                    <td>${name}</td>
+                    <td>${position}</td>
+                    <td>${team}</td>
+                    <td ${passingStats}>${player.stats?.passing?.yards || 0}</td>
+                    <td>${player.stats?.passing?.touchdowns || 0}</td>
+                    <td ${rushingStats} ${receivingStats}>${player.stats?.rushing?.yards || 0}</td>
+                    <td>${player.stats?.rushing?.touchdowns || 0}</td>
+                    <td ${miscStats}>${player.stats?.fantasy?.total_points || 0}</td>
+                    <td class="actions-column">
+                        ${hasId ? `
+                            <button onclick="viewESPNPlayerDetails('${playerId}')" class="btn btn-primary btn-circle" title="View Details">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button onclick="deleteESPNPlayer('${playerId}')" class="btn btn-danger btn-circle" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // ESPN Fetch Handler
+        document.getElementById('fetchESPN').addEventListener('click', async () => {
+            const button = document.getElementById('fetchESPN');
+            const saveButton = document.getElementById('saveESPN');
+            const previewMessage = document.getElementById('previewMessageESPN');
+
+            button.setAttribute('data-original-text', button.innerHTML);
+            setLoadingState(button, true);
+            previewMessage.style.display = 'block';
+            previewMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Fetching ESPN player data...';
+
+            try {
+                const response = await fetch('/scrape/espn');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || 'Failed to fetch ESPN data');
+                }
+
+                const data = await response.json();
+                if (!data.players || !Array.isArray(data.players)) {
+                    throw new Error('Invalid data format received from server');
+                }
+
+                updateESPNTable(data.players);
+                previewMessage.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Successfully fetched ${data.players.length} ESPN players
+                    </div>
+                `;
+                saveButton.disabled = false;
+            } catch (error) {
+                handleError(error, previewMessage);
+            } finally {
+                setLoadingState(button, false);
+            }
+        });
+
+        // ESPN Save Handler
+        document.getElementById('saveESPN').addEventListener('click', async () => {
+            const button = document.getElementById('saveESPN');
+            const previewMessage = document.getElementById('previewMessageESPN');
+
+            try {
+                button.setAttribute('data-original-text', button.innerHTML);
+                setLoadingState(button, true);
+                previewMessage.style.display = 'block';
+                previewMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving ESPN player data...';
+
+                const tableBody = document.getElementById('espnPlayersTable');
+                const rows = tableBody.getElementsByTagName('tr');
+                const players = [];
+
+                for (let row of rows) {
+                    const player = saveESPNPlayer(row);
+                    players.push(player);
+                }
+
+                if (players.length === 0) {
+                    throw new Error('No valid players to save');
+                }
+
+                console.log('Sending ESPN players to save:', players);
+
+                const response = await fetch('/save/espn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ players })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.details || 'Failed to save ESPN data');
+                }
+
+                const responseData = await response.json();
+                if (responseData.success && responseData.players) {
+                    console.log('Successfully saved players:', responseData.players);
+                    updateESPNTable(responseData.players);
+                    previewMessage.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Successfully saved ${responseData.players.length} ESPN players
+                        </div>
+                    `;
+                    button.disabled = true;
+                } else {
+                    throw new Error('Invalid response data');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                handleError(error, previewMessage);
+                button.disabled = false;
+            } finally {
+                setLoadingState(button, false);
+            }
+        });
+
+        function saveESPNPlayer(row) {
+            try {
+                const cells = row.cells;
+                
+                // Log the raw position value for debugging
+                console.log('Raw position:', cells[1].textContent);
+                
+                // Explicitly handle position with more strict checks
+                let position = cells[1].textContent.trim();
+                if (!position || position === '' || position === 'N/A' || position === 'UNKNOWN') {
+                    position = 'Unknown';  // Make sure it matches the enum case exactly
+                }
+                
+                // Log the processed position
+                console.log('Processed position:', position);
+
+                const player = {
+                    name: cells[0].textContent.trim(),
+                    position: position,
+                    team: cells[2].textContent.trim(),
+                    stats: {
+                        games_played: 0,
+                        passing: {
+                            attempts: parseInt(cells[3].dataset.attempts) || 0,
+                            completions: parseInt(cells[3].dataset.completions) || 0,
+                            yards: parseInt(cells[3].textContent) || 0,
+                            touchdowns: parseInt(cells[4].textContent) || 0,
+                            interceptions: parseInt(cells[3].dataset.interceptions) || 0
+                        },
+                        rushing: {
+                            attempts: parseInt(cells[5].dataset.attempts) || 0,
+                            yards: parseInt(cells[5].textContent) || 0,
+                            touchdowns: parseInt(cells[6].textContent) || 0
+                        },
+                        receiving: {
+                            receptions: parseInt(cells[5].dataset.receptions) || 0,
+                            yards: parseInt(cells[5].dataset.receivingYards) || 0,
+                            touchdowns: parseInt(cells[5].dataset.receivingTouchdowns) || 0
+                        },
+                        misc: {
+                            two_point_conversions: parseInt(cells[7].dataset.twoPoint) || 0,
+                            fumbles_lost: parseInt(cells[7].dataset.fumbles) || 0,
+                            total_touchdowns: parseInt(cells[7].dataset.totalTd) || 0
+                        },
+                        fantasy: {
+                            total_points: parseFloat(cells[7].textContent) || 0,
+                            points_per_game: parseFloat(cells[7].dataset.ppg) || 0
+                        }
+                    }
+                };
+
+                // Log the final player object before sending
+                console.log('Player object to save:', player);
+                
+                return player;
+            } catch (error) {
+                console.error('Error in saveESPNPlayer:', error);
+                throw error;
+            }
+        }
+
+        // Delete ESPN Player
+        async function deleteESPNPlayer(playerId) {
+            if (!playerId) {
+                console.error('No player ID provided for deletion');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this player?')) return;
+
+            const previewMessage = document.getElementById('previewMessageESPN');
+            try {
+                console.log('Deleting ESPN player with ID:', playerId);
+                const response = await fetch(`/player/delete/espn/${playerId}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.details || 'Failed to delete player');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    // Get updated player list
+                    const fetchResponse = await fetch('/players/espn');
+                    const fetchData = await fetchResponse.json();
+
+                    if (fetchData.success && fetchData.players && Array.isArray(fetchData.players)) {
+                        updateESPNTable(fetchData.players);
+                        previewMessage.innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Player deleted successfully
+                            </div>
+                        `;
+                    } else {
+                        throw new Error('Failed to fetch updated player list');
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to delete player');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                handleError(error, previewMessage);
+            }
+        }
+
+        // Delete All ESPN Players
+        document.getElementById('eraseESPN').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete all ESPN players? This action cannot be undone.')) return;
+
+            const button = document.getElementById('eraseESPN');
+            const previewMessage = document.getElementById('previewMessageESPN');
+
+            button.setAttribute('data-original-text', button.innerHTML);
+            setLoadingState(button, true);
+            previewMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting all ESPN players...';
+
+            try {
+                const response = await fetch('/eraseAll/espn', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || 'Failed to delete ESPN players');
+                }
+
+                // Update the table instead of reloading the page
+                updateESPNTable([]);
+                previewMessage.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Successfully deleted all ESPN players
+                    </div>
+                `;
+            } catch (error) {
+                handleError(error, previewMessage);
+            } finally {
+                setLoadingState(button, false);
+            }
+        });
+
+        // View CBS Player Details
+        async function viewCBSPlayerDetails(playerId) {
+            if (!playerId) {
+                console.error('No player ID provided');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/player/cbs/${playerId}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.details || 'Failed to fetch player details');
+                }
+
+                const data = await response.json();
+                if (data.success && data.player) {
+                    showPlayerDetailsModal(data.player, 'CBS');
+                } else {
+                    throw new Error('Invalid player data received');
+                }
+            } catch (error) {
+                console.error('Error fetching player details:', error);
+                alert('Failed to load player details: ' + error.message);
+            }
+        }
+
+        // View ESPN Player Details
+        async function viewESPNPlayerDetails(playerId) {
+            if (!playerId) {
+                console.error('No player ID provided');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/player/espn/${playerId}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.details || 'Failed to fetch player details');
+                }
+
+                const data = await response.json();
+                if (data.success && data.player) {
+                    showPlayerDetailsModal(data.player, 'ESPN');
+                } else {
+                    throw new Error('Invalid player data received');
+                }
+            } catch (error) {
+                console.error('Error fetching player details:', error);
+                alert('Failed to load player details: ' + error.message);
+            }
+        }
+
+        // Show Player Details Modal
+        function showPlayerDetailsModal(player, source) {
+            const modalTitle = document.getElementById('playerDetailsModalLabel');
+            const modalBody = document.getElementById('playerDetailsModalBody');
+
+            modalTitle.textContent = `${player.name} Details (${source})`;
+
+            const position = player.position === 'Unknown' ? '' : (player.position || '');
+            
+            modalBody.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${player.name}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${player.team}${position ? ` - ${position}` : ''}</h6>
+                        
+                        <div class="mt-4">
+                            <h6 class="fw-bold">Passing Stats</h6>
+                            <ul class="list-unstyled">
+                                <li>Attempts: ${player.stats.passing.attempts}</li>
+                                <li>Completions: ${player.stats.passing.completions}</li>
+                                <li>Yards: ${player.stats.passing.yards}</li>
+                                <li>Touchdowns: ${player.stats.passing.touchdowns}</li>
+                                <li>Interceptions: ${player.stats.passing.interceptions}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6 class="fw-bold">Rushing Stats</h6>
+                            <ul class="list-unstyled">
+                                <li>Attempts: ${player.stats.rushing.attempts}</li>
+                                <li>Yards: ${player.stats.rushing.yards}</li>
+                                <li>Touchdowns: ${player.stats.rushing.touchdowns}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6 class="fw-bold">Fantasy Stats</h6>
+                            <ul class="list-unstyled">
+                                <li>Total Points: ${player.stats.fantasy.total_points}</li>
+                                <li>Points Per Game: ${player.stats.fantasy.points_per_game}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('playerDetailsModal'));
+            modal.show();
+        }
+    </script>
+</body>
+
+</html>

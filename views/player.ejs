@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= player.name %> - Player Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <a href="/" class="btn btn-secondary mb-4">Back to List</a>
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">
+                            <%= player.name %> 
+                            <small class="text-light">
+                                <%= player.team || '' %> <%= player.position || '' %>
+                            </small>
+                        </h2>
+                        <% if (typeof source !== 'undefined' && source === 'ESPN') { %>
+                            <div class="status mt-2">
+                                Status: <span class="badge bg-<%= player.status === 'ACTIVE' ? 'success' : 'warning' %>">
+                                    <%= player.status || 'WAIVERS' %>
+                                </span>
+                                <% if (player.injuryStatus) { %>
+                                    <span class="badge bg-danger ms-2"><%= player.injuryStatus %></span>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h4 class="text-primary">Passing Stats</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Completions/Attempts
+                                        <span><%= player.stats?.passing?.completions || 0 %>/<%= player.stats?.passing?.attempts || 0 %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Yards
+                                        <span><%= player.stats?.passing?.yards || 0 %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Touchdowns
+                                        <span><%= player.stats?.passing?.touchdowns || 0 %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Interceptions
+                                        <span><%= player.stats?.passing?.interceptions || 0 %></span>
+                                    </li>
+                                    <% if (typeof source === 'undefined' || source !== 'ESPN') { %>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Rating
+                                            <span><%= player.stats?.passing?.rating || 0 %></span>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h4 class="text-primary">Rushing Stats</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Attempts
+                                        <span><%= player.stats?.rushing?.attempts || 0 %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Yards
+                                        <span><%= player.stats?.rushing?.yards || 0 %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Touchdowns
+                                        <span><%= player.stats?.rushing?.touchdowns || 0 %></span>
+                                    </li>
+                                    <% if (typeof source === 'undefined' || source !== 'ESPN') { %>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Average
+                                            <span><%= player.stats?.rushing?.average || 0 %></span>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </div>
+                            <% if (typeof source !== 'undefined' && source === 'ESPN') { %>
+                                <div class="col-md-4">
+                                    <h4 class="text-primary">Receiving Stats</h4>
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Receptions
+                                            <span><%= player.stats?.receiving?.receptions || 0 %></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Yards
+                                            <span><%= player.stats?.receiving?.yards || 0 %></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Touchdowns
+                                            <span><%= player.stats?.receiving?.touchdowns || 0 %></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <h4 class="text-primary">Fantasy Stats</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Games Played
+                                        <span><%= player.stats?.games_played || 0 %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Total Points
+                                        <span><%= Number(player.stats?.fantasy?.total_points || 0).toFixed(1) %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Points Per Game
+                                        <span><%= Number(player.stats?.fantasy?.points_per_game || 0).toFixed(1) %></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Fumbles Lost
+                                        <span><%= player.stats?.fantasy?.fumbles_lost || 0 %></span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <% if (typeof source !== 'undefined' && source === 'ESPN') { %>
+                                <div class="col-md-4">
+                                    <h4 class="text-primary">Miscellaneous</h4>
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            2-Point Conversions
+                                            <span><%= player.stats?.misc?.two_point_conversions || 0 %></span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Total Touchdowns
+                                            <span><%= player.stats?.misc?.total_touchdowns || 0 %></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
